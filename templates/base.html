@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Computer Lab Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=2" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">Computer Lab Management System</div>
+      <div class="nav-links">
+        {% if user.is_authenticated %}
+        <span class="user-info"
+          >Welcome, {{ user.username }}
+          <span class="badge">{{ user.get_role_display }}</span></span
+        >
+        <a href="{% url 'logout' %}" class="btn btn-logout">Logout</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-login">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+    <div class="container">
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

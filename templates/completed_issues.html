@@ -1,0 +1,69 @@
+{% extends 'base.html' %} {% block content %}
+<div class="card">
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    "
+  >
+    <h2>Completed Issues</h2>
+    <div>
+      {% if user.role == 'admin' %}
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-primary"
+        >Back to Dashboard</a
+      >
+      {% else %}
+      <a href="{% url 'it_dashboard' %}" class="btn btn-primary"
+        >Back to Dashboard</a
+      >
+      {% endif %}
+    </div>
+  </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Student</th>
+          <th>Date</th>
+          <th>Lab/PC</th>
+          <th>Category</th>
+          <th>Priority</th>
+          <th class="description-cell">Description</th>
+          <th>Image</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in issues %}
+        <tr>
+          <td>#{{ issue.id }}</td>
+          <td>{{ issue.student.username }}</td>
+          <td>{{ issue.created_at|date:"M d, Y" }}</td>
+          <td>{{ issue.lab_number }} / {{ issue.pc_number }}</td>
+          <td>{{ issue.get_category_display }}</td>
+          <td>{{ issue.get_priority_display }}</td>
+          <td class="description-cell">{{ issue.description }}</td>
+          <td>
+            {% if issue.image %}
+            <a href="{{ issue.image.url }}" target="_blank">View</a>
+            {% else %} - {% endif %}
+          </td>
+          <td>
+            <span class="status-badge status-{{ issue.status }}">
+              {{ issue.get_status_display }}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7">No completed issues found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

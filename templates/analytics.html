@@ -1,0 +1,135 @@
+{% extends 'base.html' %} {% block content %}
+<div class="card">
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    "
+  >
+    <h2>Analytics Dashboard</h2>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary"
+      >Back to Dashboard</a
+    >
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-container">
+      <h3>Issues by Status</h3>
+      <canvas id="statusChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h3>Issues by Priority</h3>
+      <canvas id="priorityChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h3>Issues by Category</h3>
+      <canvas id="categoryChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Parse the JSON data passed from the view
+    const statusData = JSON.parse("{{ status_data|escapejs }}");
+    const priorityData = JSON.parse("{{ priority_data|escapejs }}");
+    const categoryData = JSON.parse("{{ category_data|escapejs }}");
+
+    // --- Status Chart ---
+    const statusCtx = document.getElementById("statusChart").getContext("2d");
+    new Chart(statusCtx, {
+      type: "doughnut",
+      data: {
+        labels: statusData.map((item) => item.status),
+        datasets: [
+          {
+            data: statusData.map((item) => item.count),
+            backgroundColor: ["#F59E0B", "#10B981", "#EF4444", "#3B82F6"], // Example colors
+          },
+        ],
+      },
+      options: { responsive: true },
+    });
+
+    // --- Priority Chart ---
+    // Map priority level numbers to names if needed, or use them directly.
+    // Assuming priority is 1-4
+    const priorityLabels = { 1: "Low", 2: "Medium", 3: "High", 4: "Critical" };
+
+    const priorityCtx = document
+      .getElementById("priorityChart")
+      .getContext("2d");
+    new Chart(priorityCtx, {
+      type: "bar",
+      data: {
+        labels: priorityData.map(
+          (item) => priorityLabels[item.priority] || item.priority
+        ),
+        datasets: [
+          {
+            label: "Count",
+            data: priorityData.map((item) => item.count),
+            backgroundColor: "#3B82F6",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true, stepSize: 1 },
+        },
+      },
+    });
+
+    // --- Category Chart ---
+    const categoryCtx = document
+      .getElementById("categoryChart")
+      .getContext("2d");
+    new Chart(categoryCtx, {
+      type: "pie",
+      data: {
+        labels: categoryData.map((item) => item.category),
+        datasets: [
+          {
+            data: categoryData.map((item) => item.count),
+            backgroundColor: [
+              "#8B5CF6",
+              "#EC4899",
+              "#6366F1",
+              "#14B8A6",
+              "#F97316",
+            ],
+          },
+        ],
+      },
+      options: { responsive: true },
+    });
+  });
+</script>
+
+<style>
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .chart-container {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .chart-container h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #374151;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}

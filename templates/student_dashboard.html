@@ -1,0 +1,78 @@
+{% extends 'base.html' %} {% block content %}
+<div class="dashboard-grid">
+  <div class="card">
+    <h2>Raise New Issue</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %} {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }} {% if field.errors %}
+        <div class="error">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">Submit Issue</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>My Issues</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Lab/PC</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues %}
+          <tr>
+            <td>{{ issue.created_at|date:"M d, Y" }}</td>
+            <td>{{ issue.lab_number }} / {{ issue.pc_number }}</td>
+            <td>{{ issue.get_category_display }}</td>
+            <td>{{ issue.get_priority_display }}</td>
+            <td>{{ issue.description }}</td>
+            <td>
+              <span class="status-badge status-{{ issue.status }}">
+                {{ issue.get_status_display }}
+              </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5">No issues reported yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+  .card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  h2 {
+    margin-bottom: 1rem;
+  }
+</style>
+{% endblock %}

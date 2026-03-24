@@ -1,0 +1,79 @@
+{% extends 'base.html' %} {% block content %}
+<div class="card">
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    "
+  >
+    <h2>Pending Issues (IT Department)</h2>
+    <a href="{% url 'completed_issues' %}" class="btn btn-primary"
+      >View Completed Issues</a
+    >
+  </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Student</th>
+          <th>Date</th>
+          <th>Lab/PC</th>
+          <th>Category</th>
+          <th>Priority</th>
+          <th>Description</th>
+          <th>Image</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in issues %}
+        <tr>
+          <td>#{{ issue.id }}</td>
+          <td>{{ issue.student.username }}</td>
+          <td>{{ issue.created_at|date:"M d, Y" }}</td>
+          <td>{{ issue.lab_number }} / {{ issue.pc_number }}</td>
+          <td>{{ issue.get_category_display }}</td>
+          <td>{{ issue.get_priority_display }}</td>
+          <td>{{ issue.description }}</td>
+          <td>
+            {% if issue.image %}
+            <a href="{{ issue.image.url }}" target="_blank">View</a>
+            {% else %} - {% endif %}
+          </td>
+          <td>
+            <span class="status-badge status-{{ issue.status }}">
+              {{ issue.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <form
+              method="post"
+              action="{% url 'update_issue_status' issue.id %}"
+              style="display: inline"
+            >
+              {% csrf_token %}
+              <input type="hidden" name="status" value="completed" />
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="padding: 0.25rem 0.5rem; font-size: 0.875rem"
+              >
+                Mark Completed
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8">No pending issues.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
