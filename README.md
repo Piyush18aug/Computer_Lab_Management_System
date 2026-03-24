@@ -9,10 +9,15 @@ This project demonstrates core web development concepts such as CRUD operations,
 
 🔐 Login Credentials
 Role	Username	Password
+
 Student	student1	password123
+
 Admin	admin1	password123
+
 IT Staff	it1	password123
+
 Admin	admin	password123
+
 🚀 Features
 Manage computer systems (Add, Update, Delete)
 Track system availability
